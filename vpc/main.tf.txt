@@ -1,0 +1,68 @@
+# Configure the AWS Provider
+provider "aws" {
+  region     = var.region
+  access_key = var.access_key
+  secret_key = var.secret_key
+}
+
+# Creating VPC
+resource "aws_vpc" "my_vpc" {
+  cidr_block            = "10.0.0.0/16"
+  instance_tenancy      = "default"
+  enable_dns_support    = true
+  enable_dns_hostnames  = true
+
+  tags = {
+    Name = "my_vpc"
+  }
+}
+
+# Creating public subnets
+resource "aws_subnet" "public_subnet1" {
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public_subnet1"
+  }
+}
+
+resource "aws_subnet" "public_subnet2" {
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public_subnet2"
+  }
+}
+
+# Creating private subnets
+resource "aws_subnet" "private_subnet1" {
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.0.3.0/24"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "private_subnet1"
+  }
+}
+
+resource "aws_subnet" "private_subnet2" {
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.0.4.0/24"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "private_subnet2"
+  }
+}
+
+# Providing the list of public subnet IDs to the parent module
+output "public_subnet_ids" {
+  value = [
+    aws_subnet.public_subnet1.id,
+    aws_subnet.public_subnet2.id,
+  ]
+}
