@@ -1,0 +1,19 @@
+# Configure the AWS Provider
+provider "aws" {
+  region     = var.region
+  access_key = var.access_key
+  secret_key = var.secret_key
+}
+
+# Creating EC2 instance
+resource "aws_instance" "instance1" {
+  ami           = "ami-0574da719dca65348"
+  count         = 1
+  instance_type = "t2.micro"
+  key_name      = "anup1"
+  subnet_id     = module.vpc.public_subnet_ids[0]
+
+  tags = {
+    Name = "instance-1"
+  }
+}
